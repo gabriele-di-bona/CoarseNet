@@ -6,6 +6,7 @@ Coarse-graining is a widespread concept in science, appearing in situations rang
 
 ## Repository installation
 Clone this directory to your computer in a new folder with the command
+
 ```
  git clone https://github.com/gabriele-di-bona/coarse-graining-in-networks
 ```
