@@ -1,0 +1,7 @@
+graphs/*
+data/*
+*_old*
+.ipynb_checkpoints/
+bash_scripts/*.o*
+*.ipynb_checkpoints/
+*__pycache__/
