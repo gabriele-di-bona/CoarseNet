@@ -29,16 +29,16 @@ Please write a documentation of the functions you are using, using the format:
 
 ```
 def my_func(parameter1, parameter2, ...):
-    '''
-    Description:
-        Your description of the function.
+    """
+    Your description of the function.
     
-    Input:
-        - parameter1: description of parameter1 (type of parameter1)
-        - parameter2: description of parameter2 (type of parameter2)
-        - ...
+    Parameters
+    ----------
+    parameter1 (type1 or type2): description of parameter1
+    parameter1 (type3): description of parameter2
     
-    Output:
-        - output1: description of the output variable output1 (type of output1)
-    '''
+    Returns
+    -------
+    output1 (type1 or type2): description of output1
+    """
 ```
