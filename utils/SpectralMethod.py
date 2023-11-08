@@ -1,24 +1,60 @@
+
+"""
+SpectralMethod.py
+--------------------
+Implementation of the method developed in the paper:
+
+David Gfeller and Paolo De Los Rios (2007)
+Spectral Coarse Graining of Complex Networks
+DOI: 10.1103/PhysRevLett.99.038701
+
+author: Miguel A. González-Casado
+email: miguelangel.gonzalezc@outlook.es
+"""
+
 import scipy as sp 
 import networkx as nx
 import numpy as np
 import pandas as pd
-from matplotlib import pyplot as plt
-import scipy.linalg
 
-def spectral_method(A,n_relevant_eigenvectors=3,I=2):
+def spectral_method(edgelist,n_relevant_eigenvectors,I):
     '''
+
+    A function that takes the edgelist of a weighted, CONNECTED and 
+    UNDIRECTED network and produces its Coarse Grained version along 
+    with the mapping between nodes in both networks
+
+    Parameters
+    ----------
+    edgelist (pd.DataFrame): edgelist of the original network with columns 
+    'source', 'target' and 'weight'. The algorithm assumes the network to be 
+    undirected, so the edgelist requires simply the i->j link, not the j->i
     
-    A is the Adjacency Matrix (numpy array) 
-        The network must be CONNECTED and UNDIRECTED
-    
-    n_relevant_eigenvectors is the number of left eigenvectors we choose to 
+    n_relevant_eigenvectors (int): number of left eigenvectors we choose to 
     represent the large-scale behavior of the network. The larger the number, 
     the more fine grained the Coarse-Grained network is
     
-    I is the number of intervals in which we divide the left eigenvectors. The 
-    largest this number is, the more fine grained the Coarse-Grained network is
-    '''
+    I (int): number of intervals in which we divide the left eigenvectors. The 
+    larger this number is, the more fine grained the Coarse-Grained network is
     
+    TAKE INTO ACCOUNT THAT BOTH PARAMETERS NEED TO BE TUNED DEPENDING ON THE SIZE 
+    OF THE NETWORK, AND THE CHOICE WILL DIRECTLY DETERMINE THE TOTAL NUMBER OF 
+    SUPER NODES. 
+    
+    Returns
+    -------
+    mapping (pd.DataFrame): mapping between the original nodes (micro) and the 
+    Super Nodes (macro)
+    
+    edgelist (pd.DataFrame): edgelist of the original network with columns 
+    'source', 'target' and 'weight'. This output provides both the i->j and the 
+    j->i links
+    
+    '''
+
+    # We construct the Adjacency Matrix from the Edgelist
+    G = nx.from_pandas_edgelist(edgelist, source='source', target='target',edge_attr='weight')
+    A = nx.to_numpy_array(G)
     # We store the number of nodes in the network
     number_of_nodes = A.shape[0]
     # We build the Stochastic Random Walks Matrix W
@@ -28,9 +64,11 @@ def spectral_method(A,n_relevant_eigenvectors=3,I=2):
     eigenvalues, left_eigenvectors, right_eigenvectors = sp.linalg.eig(W, 
                                                                        left = True,
                                                                        right = True)
+    eigenvalues, left_eigenvectors, right_eigenvectors = eigenvalues.real, left_eigenvectors.real, right_eigenvectors.real
     
-    #The normalized left eigenvector corresponding to the eigenvalue eigenvalue[i] is the column left_eigenvectors[:,i]
-    #The normalized right eigenvector corresponding to the eigenvalue eigenvalue[i] is the column right_eigenvectors[:,i]
+    
+    #The normalized left eigenvector corresponding to the eigenvalue eigenvalues[i] is the column left_eigenvectors[:,i]
+    #The normalized right eigenvector corresponding to the eigenvalue eigenvalues[i] is the column right_eigenvectors[:,i]
     
     # Eigenvalues are not ordered, so we extract the indices of the ordered eigenvalues (decreasing order)
     ordered_eigenvalue_indices = np.argsort(-eigenvalues)
@@ -84,7 +122,7 @@ def spectral_method(A,n_relevant_eigenvectors=3,I=2):
     # We define the Super Node labels
     unique_labels = labels.drop_duplicates().reset_index(drop=True)
     unique_labels['identifier'] = np.arange(0,unique_labels.shape[0])
-    identified_labels = pd.DataFrame(index = labels.index, columns = ['SuperNode'])
+    identified_labels = pd.DataFrame(index = labels.index, columns = ['Super Node'])
     for row in unique_labels.index:
         super_node = unique_labels.loc[row,'identifier']
         row_labels = unique_labels.loc[row,labels.columns]
@@ -95,10 +133,10 @@ def spectral_method(A,n_relevant_eigenvectors=3,I=2):
     # Finally, with this info we construct the Coarse-Grained adjacency matrix
     # To do so, we aggregate the links belonging to each of the members of the super node
     A_tilde = A.copy()
-    super_nodes = np.unique(np.array(identified_labels['SuperNode']))
+    super_nodes = np.unique(np.array(identified_labels['Super Node']))
     stay = np.array([])
     for super_node in super_nodes: 
-        sub_nodes = identified_labels[identified_labels['SuperNode']==super_node].index
+        sub_nodes = identified_labels[identified_labels['Super Node']==super_node].index
         if len(sub_nodes)>1:
             stays = sub_nodes[0]
             stay = np.append(stay,stays)
@@ -110,12 +148,28 @@ def spectral_method(A,n_relevant_eigenvectors=3,I=2):
         else: 
             stays = sub_nodes[0]
             stay = np.append(stay,stays)
-    A_tilde = A_tilde[stay.astype(int),:][:,stay.astype(int)]     
-    A_tilde[A_tilde>1] = 1 
+    A_tilde = A_tilde[stay.astype(int),:][:,stay.astype(int)]  
+    
+    # Uncomment this if you want an unweighted version of the network
+    # A_tilde[A_tilde>1] = 1 
+    
+    G_tilde = nx.from_numpy_array(A_tilde,create_using=nx.DiGraph)
+    coarse_grained_edgelist = nx.to_pandas_edgelist(G_tilde)
+    
+    # We extract the mapping in the correct output
+    identified_labels.reset_index(inplace=True)    
+    mapping = identified_labels.copy()
+    mapping.columns = ['micro','macro']
     
     
-    return identified_labels.SuperNode.tolist()
+    return mapping, coarse_grained_edgelist
 
-def spectral_save(A, path):
-    res = spectral_method(A)
-    np.savetxt(path, res)
+def spectral_save(A, path): 
+    G = nx.from_numpy_array(A)
+    edgelist = nx.to_pandas_edgelist(G)
+    mapping, coarse_edgelist = spectral_method(edgelist,
+                                               n_relevant_eigenvectors=3,
+                                               I=2)
+    res = mapping.macro.tolist()
+    np.savetxt(path,res)
+    
