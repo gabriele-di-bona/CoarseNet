@@ -11,13 +11,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib as mpl
 import networkx as nx
+import os
+from mapping_auxiliary_functions import *
 
 def visualize_micro_macro(
     G_micro, mapping, G_macro,
     min_ns=60, max_ns=300, min_lw=2, max_lw=4, 
     ec='.7', nc='w', nec='steelblue',
     all_colorful=True, node_cmap='Set2',
-    method_title = None,
+    method_title = None, name_file = None, file_format = 'png',
 ):
     """
     Visualize microscale and macroscale networks side by side.
@@ -37,6 +39,8 @@ def visualize_micro_macro(
         or only those that combine multiple nodes in the microscale network (False).
     - node_cmap (string): a matplotlib cmap. Default is 'Set2'.
     - method_title (string): title of the method to be printed on top of the figure. Default is None.
+    - name_file (string): filename of the figure to be saved. Default is None (i.e., not saved)
+    - file_format (string): format of the file of the figure to be saved. Default is 'png'.
 
     Returns:
     - None: This function plots and displays the microscale
@@ -45,7 +49,7 @@ def visualize_micro_macro(
     # Create a figure with two subplots for microscale and macroscale networks
     fig, ax = plt.subplots(1,2,figsize=(10,4.5),dpi=200)
     if method_title is not None:
-        fig.suptitle(method_title, fontsize=18, va='bottom')
+        fig.suptitle(method_title, fontsize=16, va='top')
     
     # get the mapping from pd dataframe to dictionary
     micro2macro_dict = get_micro2macro_dict_from_pd_df(mapping)
@@ -84,12 +88,10 @@ def visualize_micro_macro(
         micro_colors_dict[micro_node] = macro_colors_dict[micro2macro_dict[micro_node]]
     
     # PLOT MICROSCALE NETWORK
-    # labels = nx.get_edge_attributes(G_micro,'weight')
-    nx.draw(G_micro, pos_micro,
+    nx.draw_networkx_nodes(G_micro, pos_micro,
             ax=ax[0],
             node_size=min_ns,
             node_color=[micro_colors_dict[node] for node in G_micro],
-            # edge_labels=labels,
             edgecolors=nec
            )
     # get minimum and maximum edge weight
@@ -136,7 +138,7 @@ def visualize_micro_macro(
             return min_size + (weight - min_weight)/(max_weight - min_weight)*(max_size - min_size)
         
     # plot macroscale network
-    nx.draw(G_macro, pos_macro,
+    nx.draw_networkx_nodes(G_macro, pos_macro,
             ax=ax[1],
             node_size=[rescale_weight(len(macro2microlist_dict[node])) for node in G_macro],
             node_color=[macro_colors_dict[node] for node in G_macro],
@@ -172,5 +174,20 @@ def visualize_micro_macro(
 
     ax[0].set_title('Original network')
     ax[1].set_title('Coarse-grained network')
+    
+    # remove box from axes
+    ax[0].spines['top'].set_visible(False)
+    ax[0].spines['right'].set_visible(False)
+    ax[0].spines['bottom'].set_visible(False)
+    ax[0].spines['left'].set_visible(False)
+    ax[1].spines['top'].set_visible(False)
+    ax[1].spines['right'].set_visible(False)
+    ax[1].spines['bottom'].set_visible(False)
+    ax[1].spines['left'].set_visible(False)
 
     plt.show()
+    plt.tight_layout()
+    
+    if name_file is not None:
+        os.makedirs('./figures/network_micro_macro_side_by_side/', exist_ok = True)
+        fig.savefig(os.path.join('figures', 'network_micro_macro_side_by_side', f'{name_file}.{file_format}'))
