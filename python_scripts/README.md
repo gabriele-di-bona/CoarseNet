@@ -22,7 +22,7 @@ import sys
 sys.path.insert(0, os.path.join(os.getcwd(),'utils'))
 
 # import local utils
-import myutil
+import name_of_my_util
 ```
 
 Remember to save data and figures in the related figures `./data/mydata` and `./figures/myfigure`.
