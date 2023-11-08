@@ -12,7 +12,7 @@ import numpy as np
 import matplotlib as mpl
 import networkx as nx
 import os
-from mapping_auxiliary_functions import *
+from utils.mapping_auxiliary_functions import *
 
 def visualize_micro_macro(
     G_micro, mapping, G_macro,
@@ -108,7 +108,7 @@ def visualize_micro_macro(
         min_size=min_lw, 
         max_size=max_lw,
     ):
-        if max_size == min_size:
+        if max_weight - min_weight:
             return min_size
         else:
             return min_size + (weight - min_weight)/(max_weight - min_weight)*(max_size - min_size)
@@ -132,7 +132,7 @@ def visualize_micro_macro(
         min_size=min_ns, 
         max_size=max_ns,
     ):
-        if max_size == min_size:
+        if max_weight - min_weight:
             return min_size
         else:
             return min_size + (weight - min_weight)/(max_weight - min_weight)*(max_size - min_size)
@@ -159,7 +159,7 @@ def visualize_micro_macro(
         min_size=min_lw, 
         max_size=max_lw,
     ):
-        if max_size == min_size:
+        if max_weight - min_weight:
             return min_size
         else:
             return min_size + (weight - min_weight)/(max_weight - min_weight)*(max_size - min_size)
