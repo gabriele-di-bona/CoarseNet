@@ -14,13 +14,14 @@ import numpy as np
 from collections import Counter
 
 
-def coarse_grained_visualization(g, g_cg, node_dict, figure_name='graphs.png'):
+def coarse_grained_visualization(g, layout, g_cg, node_dict, figure_name='graphs.png'):
     """
     It generates a visualization of the input graph and the coarse grained version side by side
     
     Parameters
     ----------
     g (Python-igraph): The original input network
+    layout (list of lists): Nodes' coordinates of the original input network. If not provided, we use the kk layout
     g_cg (Python-igraph): The coarse grained network (it must contain an attribute named weight for the plot)
     node_dict (Python dict): A dictionary mapping the nodes of the original network to the corresponding supernodes in g_cg
     figure_name (string): The name of the output figure one wants to export 
@@ -39,7 +40,8 @@ def coarse_grained_visualization(g, g_cg, node_dict, figure_name='graphs.png'):
     g.vs['color'] = [cmap(node_dict[v]/float(N_cg)) for v in range(g.vcount())]
 
     # COORDINATES
-    layout = g.layout("kk") # here we are using the kk layout, but one could override this row with a list of x and y coordinates
+    if(not layout): # create the layout in case it is not passed as a parameter
+        layout = g.layout("kk")
     coord_supernodes_x = [[] for i in range(N_cg)]
     coord_supernodes_y = [[] for i in range(N_cg)]
     for i in range(g.vcount()):
@@ -174,4 +176,4 @@ if __name__ == '__main__':
     g_cg, node_dict = get_coarse_grained_network(g_ori)
 
     # Visualizing
-    coarse_grained_visualization(g=g_ori, g_cg=g_cg, node_dict=node_dict, figure_name='graphs.png')
+    coarse_grained_visualization(g=g_ori, layout=None, g_cg=g_cg, node_dict=node_dict, figure_name='graphs.png')
