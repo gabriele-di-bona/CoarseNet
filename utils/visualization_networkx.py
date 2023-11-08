@@ -13,10 +13,11 @@ import matplotlib as mpl
 import networkx as nx
 
 def visualize_micro_macro(
-    G_micro, G_macro, micro2macro_dict,
+    G_micro, mapping, G_macro,
     min_ns=60, max_ns=300, min_lw=2, max_lw=4, 
     ec='.7', nc='w', nec='steelblue',
-    all_colorful=True, node_cmap='Set2'
+    all_colorful=True, node_cmap='Set2',
+    method_title = None,
 ):
     """
     Visualize microscale and macroscale networks side by side.
@@ -24,7 +25,7 @@ def visualize_micro_macro(
     Parameters:
     - G_micro (nx.Graph): Microscale network (a NetworkX graph).
     - G_macro (nx.Graph): Macroscale network (a NetworkX graph).
-    - micro2macro_dict (dict): mapping between node in G_micro to node in G_macro. 
+    - mapping (pd.DataFrame with columns 'micro' and 'macro'): dataframe with the mapping between nodes in the microscale and macroscale (original graph and coarse grained graph)
     - min_ns (int, optional): Minimum lode size for visualization. Default is 50.
     - max_ns (int, optional): Maximum node size for visualization. Default is 200.
     - min_lw (float, optional): Minimum linewidth for edges. Default is 1.5.
@@ -35,6 +36,7 @@ def visualize_micro_macro(
     - all_colorful (bool, optional): Whether to color all macroscale nodes (True)
         or only those that combine multiple nodes in the microscale network (False).
     - node_cmap (string): a matplotlib cmap. Default is 'Set2'.
+    - method_title (string): title of the method to be printed on top of the figure. Default is None.
 
     Returns:
     - None: This function plots and displays the microscale
@@ -42,8 +44,11 @@ def visualize_micro_macro(
     """
     # Create a figure with two subplots for microscale and macroscale networks
     fig, ax = plt.subplots(1,2,figsize=(10,4.5),dpi=200)
-    fig.suptitle(method_title, fontsize=)
+    if method_title is not None:
+        fig.suptitle(method_title, fontsize=18, va='bottom')
     
+    # get the mapping from pd dataframe to dictionary
+    micro2macro_dict = get_micro2macro_dict_from_pd_df(mapping)
     # get the inverse mapping from macronodes to the list of its corresponding micronodes
     macro2microlist_dict = get_macro2microlist_dict_from_micro2macro_dict(micro2macro_dict)
     
