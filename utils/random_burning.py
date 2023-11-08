@@ -47,10 +47,8 @@ def random_burning(graph, r):
     Gg_df['source']=Gg_df['edge'].apply(lambda x: x[0])
     Gg_df['target']=Gg_df['edge'].apply(lambda x: x[1])
 
-    # d. building the coarse grained graph (nx)
-    Gg = nx.from_pandas_edgelist(Gg_df, edge_attr='weight')
+    mapping = pd.DataFrame(nG_dict, index=range(1)).T.reset_index()
+    mapping.columns= ['micro', 'macro']
+    weighted_edgelist=Gg_df[['source','target','weight']]
 
-    # e. adding isolated nodes
-    Gg.add_nodes_from(nG_dict.values())
-
-    return Gg, nG_dict
+    return mapping, weighted_edgelist
