@@ -1,5 +1,7 @@
 from pynauty import *
 import networkx as nx
+import numpy as np
+import igraph as ig
 
 def from_nx_to_pynauty_graph(
     gnx: nx.Graph
@@ -41,3 +43,25 @@ def get_coarse_grained_net(g : nx.Graph):
     coarse_grained_net.remove_edges_from(self_loops)
     return coarse_grained_net
     
+
+def convert_to_igraph(g: nx.Graph, g_cg:nx.Graph):
+    """
+    Convert to a format compatible with the function 'coarse_grained_visualization'
+    """
+    ### create node_dict
+
+    label_dict = {v[0]:v[1]['partition'] for v in g.nodes(data=True)}
+    vals = np.unique(list(label_dict.values()))
+    val_dict = {vals[i]:i for i in range(len(vals))}
+    node_dict = {i: val_dict[label_dict[i]] for i in label_dict}
+
+    ### in this method we don't use weights (see s-quotients)
+    nx.set_edge_attributes(g, values=1.0, name='weight')
+    nx.set_edge_attributes(g_cg, values=1, name='weight')
+
+    ### convert to igraph
+    h = ig.Graph.from_networkx(g)
+    h_cg = ig.Graph.from_networkx(g_cg)
+    ###
+
+    return h,h_cg,node_dict
