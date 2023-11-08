@@ -163,17 +163,15 @@ def get_coarse_grained_network(g):
     return g_cg, node_dict
 
 
+if __name__ == '__main__':
+    ###### MAIN CODE (for testing purposes) ######
 
+    # Building the network
+    g_ori = ig.Graph.GRG(100,0.2)
+    #g_ori = ig.Graph.Tree(30,3)
 
+    # Generating the coarse grained net
+    g_cg, node_dict = get_coarse_grained_network(g_ori)
 
-###### MAIN CODE (for testing purposes) ######
-
-# Building the network
-g_ori = ig.Graph.GRG(100,0.2)
-#g_ori = ig.Graph.Tree(30,3)
-
-# Generating the coarse grained net
-g_cg, node_dict = get_coarse_grained_network(g_ori)
-
-# Visualizing
-coarse_grained_visualization(g=g_ori, g_cg=g_cg, node_dict=node_dict, figure_name='graphs.png')
+    # Visualizing
+    coarse_grained_visualization(g=g_ori, g_cg=g_cg, node_dict=node_dict, figure_name='graphs.png')
