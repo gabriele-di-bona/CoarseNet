@@ -60,6 +60,7 @@ def spectral_method(edgelist,n_relevant_eigenvectors,I):
     # We build the Stochastic Random Walks Matrix W
     W = A/np.sum(A, axis=0)
     
+    import scipy.linalg
     # We compute the left/right eigenvectors of W
     eigenvalues, left_eigenvectors, right_eigenvectors = sp.linalg.eig(W, 
                                                                        left = True,
