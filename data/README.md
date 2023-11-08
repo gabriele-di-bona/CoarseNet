@@ -15,5 +15,5 @@ They are in Pajek format (.paj)
 
 Read edgelist with 
 ```
-G = nx.read_weighted_edgelist('./data/ER_random.edgelist')
+G = nx.read_weighted_edgelist('./data/ER_random.edgelist', nodetype=int)
 ```
