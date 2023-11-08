@@ -1,5 +1,5 @@
 """
-visualization.py
+visualization_network_igraph.py
 --------------------
 Visualization routine to plot the input graph and the coarse grained version side by side (using igraph)
 
