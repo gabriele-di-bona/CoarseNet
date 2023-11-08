@@ -18,6 +18,7 @@ def visualize_micro_macro(
     G_micro, mapping, G_macro,
     min_ns=60, max_ns=300, min_lw=2, max_lw=4, 
     ec='.7', nc='w', nec='steelblue',
+    plot_edge_weights = True,
     all_colorful=True, node_cmap='magma_r',
     method_title = None, name_file = None, file_format = 'png',
 ):
@@ -35,6 +36,7 @@ def visualize_micro_macro(
     - ec (str, optional): Edge color. Default is '.5' (gray).
     - nc (str, optional): Node color. Default is 'w' (white).
     - nec (str, optional): Node edge color. Default is 'steelblue'.
+    - plot_edge_weights (bool): if False, edge are not plotted with weights, and min_lw is used. Otherwise, it spans from min_lw to max_lw. If all weights are the same, min_lw is used. Default is True.
     - all_colorful (bool, optional): Whether to color all macroscale nodes (True)
         or only those that combine multiple nodes in the microscale network (False).
     - node_cmap (string): a matplotlib cmap. Default is 'Set2'.
@@ -99,33 +101,40 @@ def visualize_micro_macro(
             node_color=[micro_colors_dict[node] for node in G_micro],
             edgecolors=nec
            )
-    # get minimum and maximum edge weight
-    min_weight_micro = 1000000000
-    max_weight_micro = -1000000000
-    for edge in G_micro.edges(data='weight'):
-        min_weight_micro = min(min_weight_micro, edge[2])
-        max_weight_micro = max(max_weight_micro, edge[2])
-    # rescale edge_weight
-    def rescale_weight(
-        weight, 
-        min_weight=min_weight_micro, 
-        max_weight=max_weight_micro,
-        min_size=min_lw, 
-        max_size=max_lw,
-    ):
-        if max_weight == min_weight:
-            return min_size
-        else:
-            return min_size + (weight - min_weight)/(max_weight - min_weight)*(max_size - min_size)
-        
-    for edge in G_micro.edges(data='weight'):
+    if plot_edge_weights == True:
+        # get minimum and maximum edge weight
+        min_weight_micro = 1000000000
+        max_weight_micro = -1000000000
+        for edge in G_micro.edges(data='weight'):
+            min_weight_micro = min(min_weight_micro, edge[2])
+            max_weight_micro = max(max_weight_micro, edge[2])
+        # rescale edge_weight
+        def rescale_weight(
+            weight, 
+            min_weight=min_weight_micro, 
+            max_weight=max_weight_micro,
+            min_size=min_lw, 
+            max_size=max_lw,
+        ):
+            if max_weight == min_weight:
+                return min_size
+            else:
+                return min_size + (weight - min_weight)/(max_weight - min_weight)*(max_size - min_size)
+
+        for edge in G_micro.edges(data='weight'):
+            nx.draw_networkx_edges(G_micro,pos_micro,
+                                   ax=ax[0],
+                                   edgelist=[edge], 
+                                   width=rescale_weight(edge[2]),
+                                   edge_color=ec,
+                                  )
+    else:
         nx.draw_networkx_edges(G_micro,pos_micro,
-                               ax=ax[0],
-                               edgelist=[edge], 
-                               width=rescale_weight(edge[2]),
-                               edge_color=ec,
-                              )
-    
+                                   ax=ax[1],
+                                   edgelist=G_micro.edges(), 
+                                   width=min_lw,
+                                   edge_color=ec,
+                                  )
     # PLOT MACROSCALE NETWORK
     # rescale node_weight
     min_weight_macro = 1
@@ -150,32 +159,40 @@ def visualize_micro_macro(
             edgecolors=nec
            )
     
-    # get minimum and maximum edge weight
-    min_weight_macro = 1000000000
-    max_weight_macro = -1000000000
-    for edge in G_macro.edges(data='weight'):
-        min_weight_macro = min(min_weight_macro, edge[2])
-        max_weight_macro = max(max_weight_macro, edge[2])
-    # rescale edge_weight
-    def rescale_weight(
-        weight, 
-        min_weight=min_weight_macro, 
-        max_weight=max_weight_macro,
-        min_size=min_lw, 
-        max_size=max_lw,
-    ):
-        if max_weight == min_weight:
-            return min_size
-        else:
-            return min_size + (weight - min_weight)/(max_weight - min_weight)*(max_size - min_size)
-        
-    for edge in G_macro.edges(data='weight'):
+    
+    if plot_edge_weights == True:
+        # get minimum and maximum edge weight
+        min_weight_macro = 1000000000
+        max_weight_macro = -1000000000
+        for edge in G_macro.edges(data='weight'):
+            min_weight_macro = min(min_weight_macro, edge[2])
+            max_weight_macro = max(max_weight_macro, edge[2])
+        # rescale edge_weight
+        def rescale_weight(
+            weight, 
+            min_weight=min_weight_macro, 
+            max_weight=max_weight_macro,
+            min_size=min_lw, 
+            max_size=max_lw,
+        ):
+            if max_weight == min_weight:
+                return min_size
+            else:
+                return min_size + (weight - min_weight)/(max_weight - min_weight)*(max_size - min_size)
+        for edge in G_macro.edges(data='weight'):
+            nx.draw_networkx_edges(G_macro,pos_macro,
+                                   ax=ax[1],
+                                   edgelist=[edge], 
+                                   width=rescale_weight(edge[2]),
+                                   edge_color=ec,
+                                  )
+    else:
         nx.draw_networkx_edges(G_macro,pos_macro,
-                               ax=ax[1],
-                               edgelist=[edge], 
-                               width=rescale_weight(edge[2]),
-                               edge_color=ec,
-                              )
+                                   ax=ax[1],
+                                   edgelist=G_macro.edges(), 
+                                   width=min_lw,
+                                   edge_color=ec,
+                                  )
 
     ax[0].set_title('Original network')
     ax[1].set_title('Coarse-grained network')
