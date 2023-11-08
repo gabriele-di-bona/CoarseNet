@@ -18,7 +18,7 @@ def visualize_micro_macro(
     G_micro, mapping, G_macro,
     min_ns=60, max_ns=300, min_lw=2, max_lw=4, 
     ec='.7', nc='w', nec='steelblue',
-    all_colorful=True, node_cmap='Set2',
+    all_colorful=True, node_cmap='magma_r',
     method_title = None, name_file = None, file_format = 'png',
 ):
     """

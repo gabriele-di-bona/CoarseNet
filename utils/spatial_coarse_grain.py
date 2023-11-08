@@ -46,7 +46,14 @@ def spatial_coarse_grain(graph, radius):
         nodes_df.columns =['node_id', 'pos']
         neighbors =nodes_df[nodes_df['pos'].apply(
             lambda x: distance.euclidean(tuple(x), seed_node_position) <= radius )]['node_id'].values
+
+        G_sub = G.subgraph(neighbors)
+        components = list(nx.connected_components(G_sub))
         
+        for c in components:
+            if(seed_node in c):
+                neighbors = list(c)
+
         if len(neighbors)== len(G.nodes) and _ ==0:
             print('\nRadius is too large: all the node are in an unique group')
 
