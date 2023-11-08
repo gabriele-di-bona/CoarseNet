@@ -56,6 +56,11 @@ def visualize_micro_macro(
     # get the inverse mapping from macronodes to the list of its corresponding micronodes
     macro2microlist_dict = get_macro2microlist_dict_from_micro2macro_dict(micro2macro_dict)
     
+    # check if edges have weight attribute. If not, add it to 1
+    for G in G_micro, G_macro:
+        if len(G.edges) > 0 and 'weight' not in G[list(G.edges)[0][0]][list(G.edges)[0][1]]:
+            nx.set_edge_attributes(G, 1, 'weight')
+    
     # Position the nodes of the microscale network using a spring layout
     pos_micro = nx.spring_layout(G_micro)
     
@@ -108,7 +113,7 @@ def visualize_micro_macro(
         min_size=min_lw, 
         max_size=max_lw,
     ):
-        if max_weight - min_weight:
+        if max_weight == min_weight:
             return min_size
         else:
             return min_size + (weight - min_weight)/(max_weight - min_weight)*(max_size - min_size)
@@ -132,7 +137,7 @@ def visualize_micro_macro(
         min_size=min_ns, 
         max_size=max_ns,
     ):
-        if max_weight - min_weight:
+        if max_weight == min_weight:
             return min_size
         else:
             return min_size + (weight - min_weight)/(max_weight - min_weight)*(max_size - min_size)
@@ -159,7 +164,7 @@ def visualize_micro_macro(
         min_size=min_lw, 
         max_size=max_lw,
     ):
-        if max_weight - min_weight:
+        if max_weight == min_weight:
             return min_size
         else:
             return min_size + (weight - min_weight)/(max_weight - min_weight)*(max_size - min_size)
