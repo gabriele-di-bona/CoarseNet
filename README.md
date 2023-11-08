@@ -18,18 +18,22 @@ In order to avoid problems in this github repository, everything is organised in
 Put all functions related to a specific folder in a new util in the `./utils/` folder and use them as you wish in a new script or notebook in `./python_scripts/` `./jupyter_notebooks/`.
 
 When modifying the github folder, create a new branch from the main one.
-Please commit a file only when tested and working. When you think the folder is at a good stage, ask to merge the repository through a pull request.
+Please commit a file only when tested and working. When you think the folder is at a good stage, ask to merge to the main branch through a pull request.
 
 **ACHTUNG**: do not work on the same file as other people at the same time! Otherwise you will get to merge issues and it is going to be a mess hehe :)
 
 **ACHTUNG 2**: Have fun ;)
 
 # RULES
-you can use networkx or igraph, but return ...
 
-Coarse graining is a dictionary (output of methods)
-{original_node: super_node}
+## Programming language 
+This repository is mainly working on Python. 
+Since this is a collaborative project, where some methods are already implemented in other programming languages, you might find some of these, like in R or Julia. 
+The usage of each method is documented in the related section.
 
-## Creation of the graphs
-Return an edge list or adjacency matrix when creating a graph.
-Save the adjacency matrix as 
+## Usage of coarse-graining methods
+Each method is related to a script and, if needed, some utils. 
+The purpose of a coarse-graining method is to find the coarse-grained graph $G'(N',M')$ of a graph $G(N,M)$ with $N$ nodes and $M$ edges.
+Therefore, a script related to a method needs to take the (pandas columns: source, target, weight) weighted edge list of a graph $G$ as input and return the mapping (pandas columns: node, supernode) from the nodes in $G$ to their respective node in $G'$, as well as the weighted edge list of $G'$.
+
+**ACHTUNG**: If run on Python, please wrap your method in a function to put in the utils, that take into account either the edge list or some other object (specified in the documentation), so that the related method can be imported easily in other scripts and notebooks.
