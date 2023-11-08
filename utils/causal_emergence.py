@@ -934,6 +934,7 @@ def causal_emergence(G, span=-1, thresh=1e-4, t=500,
                         each newly-added macro-node, to ensure that only
                         accurate macros are added.
     printt (bool): if True, this will print out progress of the algorithm
+    dev (bool): default to False, if True it returns more details in a dictionary.
 
     Returns
     -------
@@ -1763,7 +1764,7 @@ def find_epsilon_mapping(reach, core, order, G_micro, depth=4,
 
     for eps in epsilon_range:
 
-        labs_e = cluster_optics_dbscan(reach, core, order, eps)
+        labs_e = cluster_optics_dbscan(reachability=reach, core_distances=core, ordering=order, eps=eps)
 
         macro_mapping_e = {i: i if lab == -1 else (len(labs_e)+lab)
                            for i, lab in enumerate(labs_e)}
@@ -1799,7 +1800,7 @@ def find_epsilon_mapping(reach, core, order, G_micro, depth=4,
                                     max_ep=new_max, scale=scale)
 
 
-def causal_emergence_spectral(G, check_inacc=False, t=500):
+def causal_emergence_spectral(G, check_inacc=False, t=500, dev=False):
     r"""
     Given a microscale network, G, this function computes a macroscale mapping,
     macro_mapping, using a spectral clustering method such that when G is
@@ -1814,6 +1815,7 @@ def causal_emergence_spectral(G, check_inacc=False, t=500):
                         accurate macros are added.
     t (int): default to 10, this the number of timesteps over which inaccuracy
              is evaluated.
+    dev (bool): default to False, if True it returns more details in a dictionary.
 
     Returns
     -------
