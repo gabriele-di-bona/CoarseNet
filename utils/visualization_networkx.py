@@ -130,7 +130,7 @@ def visualize_micro_macro(
                                   )
     else:
         nx.draw_networkx_edges(G_micro,pos_micro,
-                                   ax=ax[1],
+                                   ax=ax[0],
                                    edgelist=G_micro.edges(), 
                                    width=min_lw,
                                    edge_color=ec,
