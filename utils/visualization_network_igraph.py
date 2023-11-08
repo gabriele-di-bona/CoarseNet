@@ -1,7 +1,7 @@
 """
 visualization.py
 --------------------
-Visualization routine to plot the input graph and the coarse grained version side by side
+Visualization routine to plot the input graph and the coarse grained version side by side (using igraph)
 
 author: Vander Freitas
 email: vandercomp at gmail dot com
