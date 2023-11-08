@@ -5,3 +5,4 @@ data/*
 bash_scripts/*.o*
 *.ipynb_checkpoints/
 *__pycache__/
+*.DS_Store

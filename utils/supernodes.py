@@ -49,7 +49,7 @@ def grow_neighborhoods(g, seeds, o_max=6):
     
     o = 1
     num_assigned = 0
-    num_assigned_diff = 0
+    num_assigned_diff = 1
     while o < o_max + 1 and num_assigned < len(g) and num_assigned_diff > 0:
 
         num_assigned_old = num_assigned
@@ -133,7 +133,7 @@ def supernodes(g,k = 3, o_max = 6, return_edgelist=False):
     df['micro'] = list(g.nodes())
     df['macro'] = df.micro.apply(lambda f: mapping[f])
     mapping = df
-    
+
     if return_edgelist:
         macro_edgelist = [(i,j,v) for (i,j),v in nx.get_edge_attributes(sg,'weight').items()]
         return mapping, macro_edgelist
