@@ -13,12 +13,8 @@ import os
 # All utils assume that the working directory is the root directory of the github folder
 os.chdir('../')
 
-import sys
-# Add utils directory in the list of directories to look for packages to import
-sys.path.insert(0, os.path.join(os.getcwd(),'utils'))
-
 # import local utils
-import name_of_my_util
+import utils.name_of_my_util
 ```
 
 Remember to save data and figures in the related figures `./data/mydata` and `./figures/myfigure`.

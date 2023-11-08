@@ -17,12 +17,8 @@ os.chdir('../')
 If you use a specific method/metric/etc, create the related functions in a specific util in the utils directory. Then, import it here with the following
 
 ```
-import sys
-# Add utils directory in the list of directories to look for packages to import
-sys.path.insert(0, os.path.join(os.getcwd(),'utils'))
-
 # import local utils
-import name_of_my_util
+import utils.name_of_my_util
 ```
 
 Remember to save data and figures in the related figures `./data/mydata` and `./figures/myfigure`.
