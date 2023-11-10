@@ -1,4 +1,4 @@
-# Coarse graining in networks
+# CoarseNet
 
 Collaborative repository to analyse various coarse-graining methods for networks.
 
